@@ -8,14 +8,17 @@ exports.view = (req, res) => {
     });
 };
 
-// search users by first or last name
+// search active users by first or last name
 exports.find = (req, res) => {
-    const searchTerm = req.body.search;
-    const sql = "SELECT * FROM user WHERE first_name LIKE '%" + searchTerm + "%' OR last_name LIKE '%" + searchTerm + "%'";
-    pool.query(sql, (err, rows) => {
-        if (err) return res.status(500).send('Database error');
-        res.render('home', { rows });
-    });
+    const searchTerm = '%' + (req.body.search || '') + '%';
+    pool.query(
+        'SELECT * FROM user WHERE status = ? AND (first_name LIKE ? OR last_name LIKE ?)',
+        ['active', searchTerm, searchTerm],
+        (err, rows) => {
+            if (err) return res.status(500).send('Database error');
+            res.render('home', { rows });
+        }
+    );
 };
 
 // show the add-user form
