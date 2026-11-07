@@ -6,6 +6,9 @@ const userController = require("../controllers/userController");
 router.get('/', userController.view);
 router.post('/', userController.find);
 
+// export the user list
+router.get('/export', userController.exportCsv);
+
 // view and remove one user
 router.get('/viewuser/:id', userController.viewOne);
 router.get('/:id', userController.remove);

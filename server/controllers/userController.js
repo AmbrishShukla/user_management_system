@@ -78,3 +78,12 @@ exports.viewOne = (req, res) => {
         res.render('view-user', { rows });
     });
 };
+
+// export users as CSV
+exports.exportCsv = (req, res) => {
+    pool.query('SELECT first_name, last_name, email, phone FROM user', (err, rows) => {
+        if (err) return res.status(500).send('Database error');
+        const lines = rows.map((r) => [r.first_name, r.last_name, r.email, r.phone].join(','));
+        res.type('text/csv').send(['first_name,last_name,email,phone', ...lines].join('\n'));
+    });
+};
