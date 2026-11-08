@@ -1,9 +1,11 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const exphbs = require("express-handlebars");
-const mysql = require("mysql");
 
 require("dotenv").config();
+
+// The pool reads DB_* from the environment, so load it after dotenv.
+const pool = require("./server/db");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,15 +28,6 @@ app.engine('hbs', exphbs.engine({ extname: '.hbs' }));
 
 // now setting up the view wngine
 app.set('view engine', 'hbs');
-
-// connection pool
-const pool = mysql.createPool({
-    connectionLimit: 100,
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAMe
-});
 
 // connect to database
 pool.getConnection((err, connection) => {
