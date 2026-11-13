@@ -24,10 +24,20 @@ app.use(express.static("public"));
 
 // changing handlebars extension (.handlebars -> .hbs)
 //---> note : either use exphbs.engine or || const {exphbs} = require("express-handlebars") at top
-app.engine('hbs', exphbs.engine({ extname: '.hbs' }));
+app.engine('hbs', exphbs.engine({ extname: '.hbs', helpers: { eq: (a, b) => a === b } }));
 
 // now setting up the view wngine
 app.set('view engine', 'hbs');
+
+// Behind a proxy that terminates TLS, secure cookies need Express to trust it.
+if (process.env.TRUST_PROXY) app.set('trust proxy', 1);
+
+// sessions, and the signed-in account for every view
+app.use(require('./server/auth/session'));
+app.use((req, res, next) => {
+    res.locals.account = req.session.account;
+    next();
+});
 
 // connect to database
 pool.getConnection((err, connection) => {
@@ -36,7 +46,9 @@ pool.getConnection((err, connection) => {
 });
 
 
-// router: sending the get
+// routers: signing in first, then the admin area, then the user pages
+app.use('/', require('./server/routes/auth'));
+app.use('/admin', require('./server/routes/admin'));
 const routes = require('./server/routes/user');
 app.use('/', routes);
 
