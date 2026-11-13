@@ -1,0 +1,25 @@
+<h1 class="h3 mb-3">Accounts</h1>
+<table class="table table-sm align-middle">
+    <thead>
+        <tr><th>Email</th><th>Last sign-in</th><th>Last action</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+        {{#each accounts}}
+            <tr>
+                <td>{{this.email}}</td>
+                <td>{{this.last_login_at}}</td>
+                <td>{{#if this.lastAction}}{{this.lastAction.action}} ({{this.lastAction.created_at}}){{/if}}</td>
+                <td>
+                    <form class="d-flex gap-2" method="post" action="/admin/accounts/{{this.id}}/role">
+                        <select class="form-select form-select-sm w-auto" name="role">
+                            {{#each ../roles}}
+                                <option value="{{this}}" {{#if (eq this ../role)}}selected{{/if}}>{{this}}</option>
+                            {{/each}}
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">Save</button>
+                    </form>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>

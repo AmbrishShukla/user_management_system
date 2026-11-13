@@ -1,4 +1,5 @@
 const pool = require("../db");
+const audit = require("../audit");
 
 // list active users
 exports.view = (req, res) => {
@@ -32,8 +33,9 @@ exports.create = (req, res) => {
     pool.query(
         'INSERT INTO user SET first_name = ?, last_name = ?, email = ?, phone = ?, comments = ?',
         [first_name, last_name, email, phone, comments],
-        (err) => {
+        (err, result) => {
             if (err) return res.status(500).send('Database error');
+            audit.record(req.session.account.id, 'create_user', result.insertId);
             res.render('add-user', { alert: 'User added successfully.' });
         }
     );
@@ -55,6 +57,7 @@ exports.update = (req, res) => {
         [first_name, last_name, email, phone, comments, req.params.id],
         (err) => {
             if (err) return res.status(500).send('Database error');
+            audit.record(req.session.account.id, 'update_user', req.params.id);
             pool.query('SELECT * FROM user WHERE id = ?', [req.params.id], (err, rows) => {
                 if (err) return res.status(500).send('Database error');
                 res.render('edit-user', { rows, alert: first_name + ' has been updated.' });
@@ -67,6 +70,7 @@ exports.update = (req, res) => {
 exports.remove = (req, res) => {
     pool.query('UPDATE user SET status = ? WHERE id = ?', ['removed', req.params.id], (err) => {
         if (err) return res.status(500).send('Database error');
+        audit.record(req.session.account.id, 'remove_user', req.params.id);
         res.redirect('/?removed=' + encodeURIComponent('User removed'));
     });
 };

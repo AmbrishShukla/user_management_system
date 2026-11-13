@@ -1,0 +1,23 @@
+<h1 class="h3 mb-3">Audit log</h1>
+<table class="table table-sm">
+    <thead>
+        <tr><th>When</th><th>Who</th><th>What</th><th>User</th><th>Detail</th></tr>
+    </thead>
+    <tbody>
+        {{#each entries}}
+            <tr>
+                <td>{{this.created_at}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.action}}</td>
+                <td>{{#if this.user_id}}<a href="/viewuser/{{this.user_id}}">{{this.user_id}}</a>{{/if}}</td>
+                <td>{{this.detail}}</td>
+            </tr>
+        {{else}}
+            <tr><td colspan="5" class="text-body-secondary">Nothing yet.</td></tr>
+        {{/each}}
+    </tbody>
+</table>
+<nav class="d-flex gap-3">
+    {{#if prev}}<a href="/admin/audit?page={{prev}}">Newer</a>{{/if}}
+    {{#if next}}<a href="/admin/audit?page={{next}}">Older</a>{{/if}}
+</nav>

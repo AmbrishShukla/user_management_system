@@ -1,0 +1,18 @@
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h1 class="h3 mb-3">Create an account</h1>
+        {{#if error}}<div class="alert alert-danger">{{error}}</div>{{/if}}
+        <form method="post" action="/signup">
+            <div class="mb-3">
+                <label class="form-label" for="email">Email</label>
+                <input class="form-control" id="email" name="email" type="email" autocomplete="username" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="password">Password</label>
+                <input class="form-control" id="password" name="password" type="password" autocomplete="new-password" minlength="10" required>
+                <div class="form-text">At least 10 characters, with a letter and a digit.</div>
+            </div>
+            <button class="btn btn-primary">Create account</button>
+        </form>
+    </div>
+</div>
